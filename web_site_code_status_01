@@ -1,0 +1,46 @@
+#!/bin/bash
+# author: kukangl
+# mail: kuangl@orient-media.com
+
+web_SITE_discovery () 
+{
+web_SITE=($(cat  /usr/local/zabbix/scripts/web.txt))
+        printf '{\n'
+        printf '\t"data":[\n'
+for((i=0;i<${#web_SITE[*]};++i))
+{
+        num=$(echo $((${#web_SITE[*]}-1)))
+        if [ "$i" != ${num} ];
+                then
+        printf "\t\t{ \n"
+        printf "\t\t\t\"{#WEBNAME}\":\"${web_SITE[$i]}\"},\n"
+                else
+                        printf  "\t\t{ \n"
+                        printf  "\t\t\t\"{#WEBNAME}\":\"${web_SITE[$num]}\"}]}\n"
+#         printf  '\t"over":]\n'
+#         printf  '}\n'
+        fi
+}
+}
+
+web_site_code () 
+{
+/usr/bin/curl -o /dev/null -s -w %{http_code} http://$1
+}
+
+case "$1" in
+web_site_discovery)
+                   web_SITE_discovery
+                   ;;
+
+web_site_code)
+              web_site_code $2
+              ;;
+
+*)
+ echo "Usage:$0 {web_site_discovery|web_site_code [URL]}"
+ ;;
+
+esac
+
+exit $?
