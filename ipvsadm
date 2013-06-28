@@ -1,0 +1,69 @@
+#!/bin/bash
+# author: kuangl
+# mail:kuangl@orient-media.com
+# description: Starts and stops the LVS services.
+
+# -------------------------------------------------------- #
+                # LVS_CONFINGE_FILE
+# -------------------------------------------------------- #
+
+# ipvsadmin configure IP
+LVS_DIP=192.168.122.5
+LVS_VIP=192.168.122.15
+LVS_RIP1=192.168.122.6
+LVS_RIP2=192.168.122.7
+NETMAST=255.255.255.255
+
+# source function library
+. /etc/rc.d/init.d/functions
+
+RETVAL=0
+
+start()
+{
+     # Start daemons.
+     ipvsadm -A -t $LVS_VIP:80 -s wlc -p 10
+     ipvsadm -Ln
+     sleep 5
+     ipvsadm -a -t $LVS_VIP:80 -r $LSV_RIP1:80 -g -w 1
+     ipvsadm -a -t $LVS_VIP:80 -r $LVS_RIP2:80 -g -w 1
+     ipvsadm -Ln
+     sleep 5
+     ifconfig eth0:0 $LVS_VIP netmask $NETMAST broadcast $LVS_VIP up
+     route add -host $LVS_VIP dev eth0:0
+     echo "ipvsadm started"
+}
+
+stop()
+{
+      # Stop daemons.
+      ipvsadm -C
+      ipvsadm -Z
+      ifconfig eth0:0 down
+      route del $LVS_VIP
+      echo "ipvsadm stoped"
+}
+
+restart()
+{
+      stop
+      start
+}
+
+case "$1" in
+  start)
+       start
+       ;;
+
+  stop)
+      stop
+      ;;
+
+  restart)
+         restart
+         ;;
+  *)
+       echo $"Usage: $0 {start|stop|restart}"
+       exit 1
+esac
+exit $?
