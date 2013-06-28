@@ -1,0 +1,36 @@
+#!/bin/bash
+# function:monitor system CPU temperature  from zabbix
+# author:kuangl
+# mail:kuangl@orient-media.com
+# date:2013-06-03
+
+source /etc/bashrc >/dev/null 2>&1
+source /etc/profile  >/dev/null 2>&1
+
+cpu () {
+       temperature=$(sensors |grep "^CPU" |awk '{print $3}' |grep -v "high" |grep -v "-" |awk -F"+|°C" '{print $2}' )
+       echo $temperature
+}
+
+fan () {
+       num=$(sensors |grep "^fan1" |awk '{print $2}' |grep -v "min" |grep -v "^0")
+       echo $num
+       [ "${num[0]}" == "" ] && exit
+#       totalnum=$(echo ${num} |grep -v "^$"|xargs |sed "s/ /+/g"|bc)
+#       n=${#num[@]}
+#       avg=$((${totalnum}/${n}))
+#       echo $avg
+}
+
+case "$1" in
+cpu)
+cpu
+;;
+fan)
+fan
+;;
+*)
+echo "Usage: $0 {cpu|fan}"
+;;
+
+esac
