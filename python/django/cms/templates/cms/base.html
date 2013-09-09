@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+    <head>
+    	<title>{% block title %}{% endblock %}</title>
+    	<style type="text/css" media="screen">
+    	    body { margin: 15px; font-family: Arial; }
+            h1, h2 { background: #aaa; padding: 1% 2%; margin: 0; }
+            a { text-decoration: none; color: #444; }
+            .small { font-size: 75%; color: #777; }
+            #header { font-weight: bold; background: #ccc; padding: 1% 2%; }
+            #story-body { background: #ccc; padding: 2%; }
+            #story-list { background: #ccc; padding: 1% 1% 1% 4%; }
+            #story-list li { margin: .5em 0; }
+    	</style>
+    </head>
+    <body>
+        <div id="header">
+            <form action="{% url cms-search %}" method="get">
+                <a href="{% url cms-home %}">Home</a> &bull; 
+                <label for="q">Search:</label> <input type="text" name="q">
+            </form>
+        </div>
+        {% block content %}
+        {% endblock %}
+    </body>
+</html>
